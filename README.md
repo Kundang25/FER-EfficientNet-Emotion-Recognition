@@ -148,7 +148,7 @@ FER-EfficientNet-Emotion-Recognition/
 ├── app/
 │   └── app.py
 │
-├── images/
+├── results/
 │   └── confusion_matrix.png
 │
 ├── requirements.txt
