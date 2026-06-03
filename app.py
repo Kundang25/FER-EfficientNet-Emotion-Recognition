@@ -7,7 +7,9 @@ from flask import Flask, request, render_template
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
-model = tf.keras.models.load_model('model/best_emotion_model-4.keras')
+# model = tf.keras.models.load_model('model/best_emotion_model-4.keras')
+model = tf.keras.models.load_model('model/best_emotion_model-4(till-Phase-2).keras')
+
 CLASS_NAMES = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
 face_cascade = cv2.CascadeClassifier(
     cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'

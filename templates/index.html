@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -48,5 +48,174 @@
             {% endif %}
         </main>
     </div>
+</body>
+</html> -->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Emotion AI Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="grid-bg"></div>
+
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="logo">EMO.<span>AI</span></div>
+            <div class="divider"></div>
+            <div class="status-block">
+                <div class="dot"></div>
+                <p class="status">SYSTEM: ONLINE</p>
+            </div>
+            <div class="sidebar-info">
+                <div class="info-row"><span>MODEL</span><span class="val">v4.keras</span></div>
+                <div class="info-row"><span>CLASSES</span><span class="val">7</span></div>
+                <div class="info-row"><span>INPUT</span><span class="val">224×224</span></div>
+                <div class="info-row"><span>DETECT</span><span class="val">SINGLE FACE</span></div>
+            </div>
+            <div class="sidebar-tags">
+                <span>ANGRY</span><span>HAPPY</span><span>SAD</span>
+                <span>FEAR</span><span>DISGUST</span><span>SURPRISE</span><span>NEUTRAL</span>
+            </div>
+        </div>
+
+        <main class="content">
+            <div class="top-bar">
+                <h1 class="page-title">FACE ANALYSIS</h1>
+                <span class="badge">SINGLE FACE DETECTION</span>
+            </div>
+
+            <section class="upload-card">
+                <div class="upload-inner">
+                    <div class="face-guide">
+                        <div class="corner tl"></div>
+                        <div class="corner tr"></div>
+                        <div class="corner bl"></div>
+                        <div class="corner br"></div>
+                        <div class="face-icon">
+                            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="40" cy="34" r="20" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 3"/>
+                                <circle cx="32" cy="30" r="3" fill="currentColor" opacity="0.6"/>
+                                <circle cx="48" cy="30" r="3" fill="currentColor" opacity="0.6"/>
+                                <path d="M32 42 Q40 48 48 42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M20 10 L10 10 L10 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M60 10 L70 10 L70 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M20 70 L10 70 L10 60" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M60 70 L70 70 L70 60" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <form method="post" enctype="multipart/form-data" id="uploadForm">
+                        <label class="drop-area">
+                            <input type="file" name="file" accept="image/*" onchange="handleUpload(this)" hidden id="fileInput">
+                            <div class="upload-btn">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                UPLOAD FACE IMAGE
+                            </div>
+                            <p class="hint">Best results: clear frontal face · good lighting · single subject</p>
+                        </label>
+                    </form>
+                </div>
+            </section>
+
+            {% if label %}
+            <section class="result-display">
+
+                <div class="image-wrap">
+                    <div class="image-header">
+                        <span class="img-label">SCAN TARGET</span>
+                        <span class="live-dot">● PROCESSED</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="/static/uploads/{{ image }}" alt="Target Face">
+                        <!-- Corner brackets over image -->
+                        <div class="img-corner itl"></div>
+                        <div class="img-corner itr"></div>
+                        <div class="img-corner ibl"></div>
+                        <div class="img-corner ibr"></div>
+                        <!-- Scan line -->
+                        <div class="scan-overlay"></div>
+                        <!-- Center crosshair -->
+                        <div class="crosshair">
+                            <div class="ch-h"></div>
+                            <div class="ch-v"></div>
+                        </div>
+                    </div>
+                    <div class="image-footer">
+                        <span>FACE LOCKED</span>
+                        <span>HAAR CASCADE</span>
+                    </div>
+                </div>
+
+                <div class="metrics">
+                    <div class="metric-top">
+                        <p class="metric-label">DETECTED EMOTION</p>
+                        <h3 class="emotion-text">{{ label }}</h3>
+                        <div class="emotion-underline"></div>
+                    </div>
+
+                    <div class="metric-mid">
+                        <p class="metric-label">CONFIDENCE SCORE</p>
+                        <div class="conf-track">
+                            <div class="conf-fill" style="width: {{ confidence }}"></div>
+                            <div class="conf-glow" style="left: {{ confidence }}"></div>
+                        </div>
+                        <div class="conf-nums">
+                            <span>0%</span>
+                            <span class="conf-val">{{ confidence }}</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-bottom">
+                        <p class="metric-label">CLASS DISTRIBUTION</p>
+                        <div class="classes">
+                            {% set emotions = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'] %}
+                            {% for e in emotions %}
+                            <div class="class-row {% if e == label %}active{% endif %}">
+                                <span>{{ e }}</span>
+                                <div class="class-bar">
+                                    <div class="class-fill {% if e == label %}highlight{% endif %}"></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <a href="/" class="clear-btn">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+                        RESET SCAN
+                    </a>
+                </div>
+            </section>
+            {% endif %}
+
+            {% if error %}
+            <div class="error-box">⚠ {{ error }}</div>
+            {% endif %}
+        </main>
+    </div>
+
+    <div id="loading-screen" style="display:none">
+        <div class="load-inner">
+            <div class="scan-ring"></div>
+            <p>ANALYZING FACE...</p>
+        </div>
+    </div>
+
+    <script>
+        function handleUpload(input) {
+            if (input.files && input.files[0]) {
+                document.getElementById('loading-screen').style.display = 'flex';
+                input.form.submit();
+            }
+        }
+    </script>
 </body>
 </html>
